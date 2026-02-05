@@ -16,7 +16,6 @@ export class AppController {
 	@ZodSerializerDto(HelloResponseDto)
 	getHello(): HelloResponse {
 		// return this.appService.getHello();
-		console.log("running...");
 		return { test: "test" } as any;
 	}
 

@@ -4,6 +4,7 @@ import { ExpressAdapter } from "@nestjs/platform-express";
 import type { Callback, Context, Handler } from "aws-lambda";
 import express from "express";
 import { AppModule } from "./app.module";
+import { GlobalExceptionsFilter } from "./filters/globalExceptionFilter";
 
 let server: Handler;
 
@@ -12,6 +13,7 @@ async function bootstrap() {
 	const adapter = new ExpressAdapter(expressApp);
 
 	const app = await NestFactory.create(AppModule, adapter);
+	app.useGlobalFilters(new GlobalExceptionsFilter());
 	await app.init();
 
 	return serverlessExpress({ app: expressApp });
