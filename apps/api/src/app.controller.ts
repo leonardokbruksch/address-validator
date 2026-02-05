@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+// biome-ignore lint/style/useImportType: NestJS requires AppService imported as an object.
 import { AppService } from './app.service';
 
 @Controller()
