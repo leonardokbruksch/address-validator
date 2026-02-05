@@ -12,11 +12,17 @@
 		"check": "biome check .",
 		"build": "pnpm -r build",
 		"deploy": "pnpm --filter infra deploy",
-		"dev": "pnpm --filter web dev"
+		"dev": "concurrently -k -n WEB,API -c blue,green \"pnpm dev:web\" \"pnpm dev:api\"",
+		"dev:web": "pnpm --filter web dev",
+		"dev:api": "pnpm --filter api dev"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.14",
+		"concurrently": "^9.2.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
 	}
 }
