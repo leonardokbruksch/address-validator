@@ -18,6 +18,7 @@ type NominatimResult = {
 @Injectable()
 export class NominatimProvider {
     async search(addressText: string): Promise<NominatimResult | null> {
+        console.log("NominatimProvider.search called with:", addressText);
         const url = new URL("https://nominatim.openstreetmap.org/search");
 
         url.searchParams.set("q", addressText);

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,37 +6,32 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 type StructuredAddress = {
-	street: string;
-	number: string;
-	city: string;
-	state: string;
-	zipCode: string;
+	street?: string;
+	number?: string;
+	city?: string;
+	state?: string;
+	zipCode?: string;
 };
-
-const MOCK_STRUCTURED: StructuredAddress = {
-	street: "Amphitheatre Pkwy",
-	number: "1600",
-	city: "Mountain View",
-	state: "CA",
-	zipCode: "94043",
-};
-
-const DEFAULT_INPUT =
-	"1600 Amphitheatre Pkwy, Mountain View, CA 94043";
 
 function App() {
-	const [input, setInput] = useState(DEFAULT_INPUT);
-	const [result, setResult] = useState<StructuredAddress | null>(
-		MOCK_STRUCTURED,
-	);
-
-	const isValidatable = useMemo(() => input.trim().length > 6, [input]);
+	const [input, setInput] = useState<string | undefined>(undefined);
+	const [result, setResult] = useState<StructuredAddress | undefined>(undefined);
 
 	const handleValidate = () => {
-		if (!isValidatable) {
-			return;
-		}
-		setResult(MOCK_STRUCTURED);
+		fetch("http://localhost:3000/validate-address", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ address: input }),
+		})
+			.then((res) => res.json())
+			.then((data: StructuredAddress) => {
+				setResult(data);
+			})
+			.catch((err) => {
+				console.error("Error validating address:", err);
+			});
 	};
 
 	return (
@@ -74,13 +69,13 @@ function App() {
 							</div>
 						</CardContent>
 						<CardFooter className="flex items-center justify-between">
-							<Button onClick={handleValidate} disabled={!isValidatable}>
+							<Button onClick={handleValidate} disabled={input === undefined || input?.trim() === ""}>
 								Validate Address
 							</Button>
 						</CardFooter>
 					</Card>
 
-					<Card className="border-border/70">
+					{result && <Card className="border-border/70">
 						<CardHeader>
 							<h2 className="text-lg font-semibold">Structured Output</h2>
 							<p className="text-sm text-muted-foreground">
@@ -113,7 +108,7 @@ function App() {
 								</div>
 							</div>
 						</CardContent>
-					</Card>
+					</Card>}
 				</section>
 			</main>
 		</div>

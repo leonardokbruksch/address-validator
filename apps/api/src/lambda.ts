@@ -13,7 +13,15 @@ async function bootstrap() {
 	const adapter = new ExpressAdapter(expressApp);
 
 	const app = await NestFactory.create(AppModule, adapter);
+
 	app.useGlobalFilters(new GlobalExceptionsFilter());
+
+	app.enableCors({
+		origin: true,
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization"],
+	});
+
 	await app.init();
 
 	return serverlessExpress({ app: expressApp });
