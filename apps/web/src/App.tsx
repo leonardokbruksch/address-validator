@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { InputCard } from "@/components/InputCard";
+import { ResultCard } from "@/components/ResultCard";
 
-type StructuredAddress = {
+export type StructuredAddress = {
 	street?: string;
 	number?: string;
 	city?: string;
@@ -16,9 +13,14 @@ type StructuredAddress = {
 function App() {
 	const [input, setInput] = useState<string | undefined>(undefined);
 	const [result, setResult] = useState<StructuredAddress | undefined>(undefined);
+	const [loading, setLoading] = useState(false);
 
 	const handleValidate = () => {
-		fetch("http://localhost:3000/validate-address", {
+		setResult(undefined);
+		setLoading(true);
+
+		const apiUrl = import.meta.env.API_URL || "http://localhost:3000";
+		fetch(`${apiUrl}/validate-address`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -28,9 +30,11 @@ function App() {
 			.then((res) => res.json())
 			.then((data: StructuredAddress) => {
 				setResult(data);
+				setLoading(false);
 			})
 			.catch((err) => {
 				console.error("Error validating address:", err);
+				setLoading(false);
 			});
 	};
 
@@ -50,65 +54,13 @@ function App() {
 				</header>
 
 				<section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-					<Card className="border-border/70">
-						<CardHeader>
-							<h2 className="text-lg font-semibold">Input</h2>
-							<p className="text-sm text-muted-foreground">
-								U.S. addresses only. We will analyze the input and break it down into normalized fields.
-							</p>
-						</CardHeader>
-						<CardContent className="flex flex-col gap-4">
-							<div className="flex flex-col gap-2">
-								<Label htmlFor="address-input">Address</Label>
-								<Textarea
-									id="address-input"
-									value={input}
-									onChange={(event) => setInput(event.target.value)}
-									placeholder="123 Market St, San Francisco, CA 94105"
-								/>
-							</div>
-						</CardContent>
-						<CardFooter className="flex items-center justify-between">
-							<Button onClick={handleValidate} disabled={input === undefined || input?.trim() === ""}>
-								Validate Address
-							</Button>
-						</CardFooter>
-					</Card>
-
-					{result && <Card className="border-border/70">
-						<CardHeader>
-							<h2 className="text-lg font-semibold">Structured Output</h2>
-							<p className="text-sm text-muted-foreground">
-								Normalized fields for downstream systems.
-							</p>
-						</CardHeader>
-						<CardContent className="grid gap-4">
-							<div className="grid gap-3">
-								<Label>Street</Label>
-								<Input value={result?.street ?? ""} readOnly />
-							</div>
-							<div className="grid gap-3 sm:grid-cols-2">
-								<div className="grid gap-3">
-									<Label>Number</Label>
-									<Input value={result?.number ?? ""} readOnly />
-								</div>
-								<div className="grid gap-3">
-									<Label>City</Label>
-									<Input value={result?.city ?? ""} readOnly />
-								</div>
-							</div>
-							<div className="grid gap-3 sm:grid-cols-2">
-								<div className="grid gap-3">
-									<Label>State</Label>
-									<Input value={result?.state ?? ""} readOnly />
-								</div>
-								<div className="grid gap-3">
-									<Label>Zip Code</Label>
-									<Input value={result?.zipCode ?? ""} readOnly />
-								</div>
-							</div>
-						</CardContent>
-					</Card>}
+					<InputCard
+						input={input}
+						onInputChange={setInput}
+						onValidate={handleValidate}
+						isLoading={loading}
+					/>
+					<ResultCard result={result} loading={loading} />
 				</section>
 			</main>
 		</div>
