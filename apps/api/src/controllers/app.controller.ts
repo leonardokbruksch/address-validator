@@ -15,8 +15,7 @@ export class AppController {
 	@Get()
 	@ZodSerializerDto(HelloResponseDto)
 	getHello(): HelloResponse {
-		// return this.appService.getHello();
-		return { test: "test" } as any;
+		return this.appService.getHello();
 	}
 
 	@Post()
