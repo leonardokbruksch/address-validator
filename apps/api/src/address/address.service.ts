@@ -1,10 +1,30 @@
 import { Injectable } from "@nestjs/common";
+import { NominatimProvider } from "src/providers/nominatim";
 import { ValidateAddressResponse } from "src/schemas/address.schema";
-import type { HelloResponse } from "src/schemas/app.schema";
 
 @Injectable()
 export class AddressService {
-    validateAddress(addressText: string): ValidateAddressResponse {
-        return { street: "123 Main St", city: "Anytown", state: "CA", zipCode: "12345" };
+    constructor(private readonly nominatim: NominatimProvider) { }
+
+    async validateAddress(addressText: string): Promise<ValidateAddressResponse> {
+        const result = await this.nominatim.search(addressText);
+
+        if (!result?.address) {
+            return {};
+        }
+
+        const address = result.address;
+
+        if (address.country_code !== "us") {
+            return {};
+        }
+
+        return {
+            street: address.road,
+            number: address.house_number,
+            city: address.city ?? address.town ?? address.village,
+            state: address.state,
+            zipCode: address.postcode,
+        };
     }
 }
