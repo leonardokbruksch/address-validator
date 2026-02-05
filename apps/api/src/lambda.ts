@@ -3,8 +3,8 @@ import { NestFactory } from "@nestjs/core";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import type { Callback, Context, Handler } from "aws-lambda";
 import express from "express";
-import { AppModule } from "./app.module";
 import { GlobalExceptionsFilter } from "./filters/globalExceptionFilter";
+import { AppModule } from "./app.module";
 
 let server: Handler;
 

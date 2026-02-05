@@ -1,11 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
-import { AppController } from "./controllers/app.controller";
-import { AppService } from "./services/app.service";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
 import { LoggerMiddleware } from "./middleware/loggerMiddleware";
+import { AddressModule } from "./address/address.module";
 
 @Module({
+	imports: [AddressModule],
 	controllers: [AppController],
 	providers: [
 		AppService,

@@ -1,12 +1,11 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import type { HelloResponse } from "src/schemas/hello.schema";
+import type { HelloResponse } from "src/schemas/app.schema";
 import {
 	HelloRequestDto,
 	HelloResponseDto,
-	HelloResponseSchema,
-} from "src/schemas/hello.schema";
-import { AppService } from "../services/app.service";
+} from "src/schemas/app.schema";
 import { ZodSerializerDto } from "nestjs-zod";
+import { AppService } from "./app.service";
 
 @Controller()
 export class AppController {
