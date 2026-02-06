@@ -41,10 +41,11 @@ export default function App() {
 						Address Validator
 					</p>
 					<h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-						Validate and Structure any U.S. address into a clean, structured format.
+						Validate and standardize U.S. addresses into a clean, structured format.
 					</h1>
 					<p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-						We will analyze, find missing gaps, and break down the input into normalized fields for downstream systems.
+						Accepts free-form address input and returns normalized address components,
+						indicating whether the result is valid, corrected, or unverifiable.
 					</p>
 				</header>
 
