@@ -8,18 +8,16 @@ A take-home interview project that implements a simple address validation flow e
 
 ## Architecture
 
-```
-[Web UI] -> POST /validate-address -> [NestJS API] -> [AddressProvider] -> [Nominatim]
-```
+![diagram](./docs/imgs/diagram.png)
 
 - The API validates requests and responses at runtime using Zod schemas (`nestjs-zod` DTOs).
 - Address lookups currently use the Nominatim public API through a provider interface, so a different provider can be swapped in later with minimal surface changes.
 
 ## Running Locally
 
-Prereqs:
+Pre-requisites:
 
-- Node.js
+- `Node.js`
 - `pnpm`
 
 Install dependencies:
@@ -34,29 +32,29 @@ Run the web app and API together:
 pnpm dev
 ```
 
-Run the API only:
+Once the development server is running, access the address validator UI at:
 
-```bash
-pnpm dev:api
+- http://localhost:5173
+
+Or test the API directly with a tool like Postman:
+
+- http://localhost:3000/validate-address
+
+Example Request:
+
+```json
+{
+  "address": "1 Infinite Loop, Cupertino, CA 95014"
+}
 ```
 
-Run the web app only:
 
-```bash
-pnpm dev:web
-```
-
-Run API unit tests:
-
-```bash
-pnpm --filter api test
-```
 
 ## Address Provider Choice (Nominatim)
 
-I selected the Nominatim public API (OpenStreetMap) as the initial provider because it is free, does not require an API key, and is sufficient for a take-home assessment. Nominatim can also be self-hosted in the cloud if a team wants a fully self-managed setup.
+I selected the Nominatim public API (OpenStreetMap) as the initial provider because it is free and does not require an API key. Nominatim can also be self-hosted in the cloud if a fully self-managed setup is desired.
 
-Other viable options include Google Maps API (commercial, strong coverage and data quality), USPS (US-centric), Smarty/USPS-powered services, and other paid providers.
+Other viable options include Google Maps API, USPS, Smarty, and Mapbox.
 
 Tradeoffs for Nominatim:
 
@@ -64,23 +62,19 @@ Tradeoffs for Nominatim:
 - ✅ OpenStreetMap ecosystem with an option to run a self-managed instance
 - ⚠️ Rate limits and potential availability constraints on the public endpoint
 - ⚠️ Data quality and normalization may be less consistent than paid providers
+- ⚠️ No fuzzy search means typos won't be caught by Nominatim
 
 The provider is accessed through an `AddressProvider` interface, so swapping providers later is a small, contained change.
+
+## Shared Types Package
+
+I created a shared `@address-validator/types` package in the monorepo. Both the API and web app consume the same Zod schemas and TypeScript types, which prevents duplication and keeps contracts synchronized across the stack. This makes the types the single source of truth for validation and response shapes.
 
 ## Validation Logic (Explicit)
 
 The API returns a structured address plus a status. The status is computed with the following rules:
 
-If:
-- No address found => `UNVERIFIABLE`
-- Multiple addresses found => `UNVERIFIABLE`
-- Address is incomplete (missing any of street, number, city, state, zip) => `UNVERIFIABLE`
-
-If:
-- Address matches the input exactly => `VALID`
-
-If:
-- Address found but corrected or additional info was added => `CORRECTED`
+![flow](./docs/imgs/flow.png)
 
 ## API
 
@@ -89,7 +83,7 @@ If:
 
 ```json
 {
-  "address": "1600 Amphitheatre Pkwy, Mountain View, CA 94043"
+  "address": "1209 N Orange St, Wilmington, DE 19801"
 }
 ```
 
@@ -121,20 +115,21 @@ If the lookup fails or returns an incomplete result, the API returns:
 
 - `apps/web`: React + Vite UI
 - `apps/api`: NestJS API, schemas, providers, and unit tests
+- `apps/types`: Shared data contracts and types for both backend and frontend
 
 ## Future Improvements
 
 - Add caching and request throttling to reduce dependency on upstream rate limits
 - Support additional providers (USPS, Smarty, Google, etc.) via the provider interface
 - Expand validation semantics (e.g., Avenue vs Av, N vs North)
-- Add e2e tests that hit Nominatim's API
+- Add E2E tests that hit Nominatim's API
 - Add Nominatim locally as a docker image. Replace their public API with a managed one.
 
-## Tools And AI Usage
+## AI Usage
 
-- Languages/Frameworks: TypeScript, NestJS (API), React + Vite (web), Zod (runtime validation)
-- Tools: `pnpm` workspaces, Jest for unit tests
-- AI usage: Used Codex/ChatGPT to draft and refine README content and clarify decision/tradeoff wording.
+- Used Codex (OpenAI) to create the frontend components and css for the address validator website.
+- Utilized ChatGPT to research on vendors for address search and autocomplete.
+- Used Copilot for autocomplete features and refactoring.
 
 ## Technologies Used
 
@@ -145,3 +140,4 @@ If the lookup fails or returns an incomplete result, the API returns:
 - 🖥️ Frontend: React + Vite
 - 🎨 Styling: Tailwind CSS
 - 📦 Monorepo: `pnpm` workspaces
+- 🧩 Shared Types: `@address-validator/types` (Zod + TypeScript)
