@@ -83,7 +83,7 @@ The provider is accessed through an `AddressProvider` interface, so swapping pro
 
 ## Shared Types Package
 
-I created a shared `@address-validator/types` package in the monorepo. Both the API and web app consume the same Zod schemas and TypeScript types, which prevents duplication and keeps contracts synchronized across the stack. This makes the types the single source of truth for validation and response shapes.
+I created a shared `@address-validator/types` package in the monorepo. Both the API and web app consume the same Zod schemas and TypeScript types, which prevents duplication and keeps contracts synchronized across the stack. This keeps the codebase easy to follow and enforces a single source of truth for validation and response shapes.
 
 ## Validation Logic (Explicit)
 
@@ -120,6 +120,8 @@ If the lookup fails or returns an incomplete result, the API returns:
 ```json
 { "status": "UNVERIFIABLE" }
 ```
+
+If the upstream address provider is unavailable or errors, the API returns `502 Bad Gateway`.
 
 ## Configuration
 
