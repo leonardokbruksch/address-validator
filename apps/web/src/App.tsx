@@ -12,7 +12,7 @@ export default function App() {
 		setResult(undefined);
 		setLoading(true);
 
-		const apiUrl = import.meta.env.API_URL || "http://localhost:3000";
+		const apiUrl = import.meta.env.VITE_ADDRESS_VALIDATOR_API_URL || "http://localhost:3000";
 		fetch(`${apiUrl}/validate-address`, {
 			method: "POST",
 			headers: {

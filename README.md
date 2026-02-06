@@ -126,7 +126,7 @@ If the upstream address provider is unavailable or errors, the API returns `502 
 ## Configuration
 
 - The web app defaults to `http://localhost:3000` for the API.
-- You can override this by setting `API_URL` at build time (e.g. in the Vite environment).
+- You can override this by setting `VITE_ADDRESS_VALIDATOR_API_URL` at build time (e.g. in the Vite environment).
 
 ## Repository Structure
 
