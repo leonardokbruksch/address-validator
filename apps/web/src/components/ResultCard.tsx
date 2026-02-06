@@ -1,11 +1,11 @@
-import type { StructuredAddress } from "@/App";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { StructuredAddress } from "@/types/address";
+import StatusBadge from "./StatusBadge";
+import ReadonlyField from "./ReadonlyField";
 
 interface ResultCardProps {
-    result: StructuredAddress | undefined;
+    result?: StructuredAddress;
     loading: boolean;
 }
 
@@ -22,50 +22,46 @@ export function ResultCard({ result, loading }: ResultCardProps) {
                     Normalized fields for downstream systems.
                 </p>
             </CardHeader>
+
             <CardContent className="grid gap-4">
-                <div className="grid gap-3">
-                    <Label>Street</Label>
-                    {loading ? (
-                        <Skeleton className="h-10 w-full" />
-                    ) : (
-                        <Input value={result?.street ?? ""} readOnly />
-                    )}
+                <div className="flex items-center gap-2 pb-2 border-b">
+                    <span className="text-sm font-medium">Status:</span>
+                    <StatusBadge
+                        status={result?.status}
+                        loading={loading}
+                    />
                 </div>
+
+                <ReadonlyField
+                    label="Street"
+                    value={result?.street}
+                    loading={loading}
+                />
+
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="grid gap-3">
-                        <Label>Number</Label>
-                        {loading ? (
-                            <Skeleton className="h-10 w-full" />
-                        ) : (
-                            <Input value={result?.number ?? ""} readOnly />
-                        )}
-                    </div>
-                    <div className="grid gap-3">
-                        <Label>City</Label>
-                        {loading ? (
-                            <Skeleton className="h-10 w-full" />
-                        ) : (
-                            <Input value={result?.city ?? ""} readOnly />
-                        )}
-                    </div>
+                    <ReadonlyField
+                        label="Number"
+                        value={result?.number}
+                        loading={loading}
+                    />
+                    <ReadonlyField
+                        label="City"
+                        value={result?.city}
+                        loading={loading}
+                    />
                 </div>
+
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="grid gap-3">
-                        <Label>State</Label>
-                        {loading ? (
-                            <Skeleton className="h-10 w-full" />
-                        ) : (
-                            <Input value={result?.state ?? ""} readOnly />
-                        )}
-                    </div>
-                    <div className="grid gap-3">
-                        <Label>Zip Code</Label>
-                        {loading ? (
-                            <Skeleton className="h-10 w-full" />
-                        ) : (
-                            <Input value={result?.zipCode ?? ""} readOnly />
-                        )}
-                    </div>
+                    <ReadonlyField
+                        label="State"
+                        value={result?.state}
+                        loading={loading}
+                    />
+                    <ReadonlyField
+                        label="Zip Code"
+                        value={result?.zipCode}
+                        loading={loading}
+                    />
                 </div>
             </CardContent>
         </Card>

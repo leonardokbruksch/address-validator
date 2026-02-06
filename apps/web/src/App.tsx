@@ -1,16 +1,9 @@
 import { useState } from "react";
 import { InputCard } from "@/components/InputCard";
 import { ResultCard } from "@/components/ResultCard";
+import { ADDRESS_STATUS, type StructuredAddress } from "./types/address";
 
-export type StructuredAddress = {
-	street?: string;
-	number?: string;
-	city?: string;
-	state?: string;
-	zipCode?: string;
-};
-
-function App() {
+export default function App() {
 	const [input, setInput] = useState<string | undefined>(undefined);
 	const [result, setResult] = useState<StructuredAddress | undefined>(undefined);
 	const [loading, setLoading] = useState(false);
@@ -31,10 +24,12 @@ function App() {
 			.then((data: StructuredAddress) => {
 				setResult(data);
 				setLoading(false);
+
 			})
 			.catch((err) => {
 				console.error("Error validating address:", err);
 				setLoading(false);
+				setResult({ status: ADDRESS_STATUS.UNVERIFIABLE });
 			});
 	};
 
@@ -66,5 +61,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;

@@ -12,4 +12,11 @@ export class AddressController {
 	sendHello(@Body() request: ValidateAddressRequestDto) {
 		return this.addressService.validateAddress(request.address);
 	}
+
+	// @Post("google")
+	// async validateWithGoogle(
+	// 	@Body() body: ValidateAddressRequestDto,
+	// ): Promise<ValidateAddressResponseDto> {
+	// 	return this.addressService.validateWithGoogle(body.address);
+	// }
 }

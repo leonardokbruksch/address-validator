@@ -15,20 +15,26 @@ type NominatimResult = {
     address?: NominatimAddress;
 };
 
+const USER_AGENT = "address-validator-interview/1.0";
+
+export const US_COUNTRY_CODE = "us";
+
 @Injectable()
 export class NominatimProvider {
-    async search(addressText: string): Promise<NominatimResult | null> {
-        console.log("NominatimProvider.search called with:", addressText);
+    async search(addressText: string): Promise<NominatimResult[] | null> {
         const url = new URL("https://nominatim.openstreetmap.org/search");
 
         url.searchParams.set("q", addressText);
+        url.searchParams.set("countrycodes", US_COUNTRY_CODE);
+        url.searchParams.set("accept-language", "en");
+
         url.searchParams.set("format", "jsonv2");
         url.searchParams.set("addressdetails", "1");
         url.searchParams.set("limit", "1");
 
         const response = await fetch(url.toString(), {
             headers: {
-                "User-Agent": "address-validator-interview/1.0",
+                "User-Agent": USER_AGENT,
             },
         });
 
@@ -38,6 +44,6 @@ export class NominatimProvider {
 
         const results = (await response.json()) as NominatimResult[];
 
-        return results.length ? results[0] : null;
+        return results.length ? results : null;
     }
 }
