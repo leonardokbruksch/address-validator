@@ -32,7 +32,11 @@ export const StructuredAddressSchema = AddressSchema.extend({
 export type StructuredAddress = z.infer<typeof StructuredAddressSchema>;
 
 export const ValidateAddressRequestSchema = z.object({
-    address: z.string(),
+    address: z
+        .string()
+        .trim()
+        .min(1, "address is required")
+        .max(512, "address is too long"),
 });
 
 export type ValidateAddressRequest = z.infer<
