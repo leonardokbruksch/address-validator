@@ -6,6 +6,7 @@ A take-home interview project that implements a simple address validation flow e
 
 - `apps/web`: React + Vite UI for submitting an address and viewing results
 - `apps/api`: NestJS API with a single validation endpoint and unit tests
+- `infra`: IaC with AWS CDK
 - Monorepo managed with `pnpm` workspaces
 
 ## Technologies Used
