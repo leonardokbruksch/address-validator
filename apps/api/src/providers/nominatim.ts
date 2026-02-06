@@ -26,6 +26,7 @@ export const US_COUNTRY_CODE = "us";
 export class NominatimProvider implements AddressProvider {
     private readonly maxRetries = 3;
     private readonly retryDelayMs = 1000;
+    private readonly timeoutMs = 5000;
 
     async search(addressText: string): Promise<Address[] | null> {
         const url = this.buildUrl(addressText);
@@ -49,9 +50,13 @@ export class NominatimProvider implements AddressProvider {
     private async fetchWithRetry(url: URL): Promise<Response> {
         for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
+
                 const response = await fetch(url.toString(), {
                     headers: { "User-Agent": USER_AGENT },
-                });
+                    signal: controller.signal,
+                }).finally(() => clearTimeout(timeoutId));
 
                 if (!response.ok) {
                     if (this.shouldRetry(response.status) && attempt < this.maxRetries) {

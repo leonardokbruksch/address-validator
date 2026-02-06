@@ -1,14 +1,22 @@
 import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "@address-validator/types";
-import { Injectable } from "@nestjs/common";
-import { NominatimProvider } from "src/providers/nominatim";
+import { BadGatewayException, Inject, Injectable } from "@nestjs/common";
+import * as addressProvider from "src/providers/addressProvider";
 import { US_STATE_MAP } from "src/schemas/usStates";
 
 @Injectable()
 export class AddressService {
-    constructor(private readonly nominatim: NominatimProvider) { }
+    constructor(
+        @Inject(addressProvider.ADDRESS_PROVIDER) private readonly provider: addressProvider.AddressProvider,
+    ) { }
 
     async validateAddress(input: string): Promise<ValidateAddressResponse> {
-        const addresses = await this.nominatim.search(input);
+        let addresses: Address[] | null = null;
+        try {
+            addresses = await this.provider.search(input);
+        } catch (error) {
+            console.error("Address provider error:", error);
+            throw new BadGatewayException("Address provider error");
+        }
 
         if (!addresses || addresses.length !== 1 || !addresses[0]) {
             return this.unverifiableResponse();
