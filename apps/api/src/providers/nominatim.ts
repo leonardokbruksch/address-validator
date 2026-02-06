@@ -31,7 +31,6 @@ export class NominatimProvider implements AddressProvider {
 
         url.searchParams.set("format", "jsonv2");
         url.searchParams.set("addressdetails", "1");
-        url.searchParams.set("limit", "1");
 
         const response = await fetch(url.toString(), {
             headers: {
