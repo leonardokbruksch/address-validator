@@ -1,10 +1,22 @@
-# Address Validator
+# 📦 Address Validator
 
 A take-home interview project that implements a simple address validation flow end-to-end:
 
 - `apps/web`: React + Vite UI for submitting an address and viewing results
 - `apps/api`: NestJS API with a single validation endpoint and unit tests
 - Monorepo managed with `pnpm` workspaces
+
+## Technologies Used
+
+- 🧠 Language: TypeScript
+- 🏗️ Backend: NestJS
+- 🧪 Validation: Zod (runtime schemas + DTOs)
+- ✅ Testing: Jest (unit tests)
+- 🖥️ Frontend: React + Vite
+- 🎨 Styling: Tailwind CSS
+- 📦 Monorepo: `pnpm` workspaces
+- 🧩 Shared Types: `@address-validator/types` (Zod + TypeScript)
+
 
 ## Architecture
 
@@ -36,6 +48,8 @@ Once the development server is running, access the address validator UI at:
 
 - http://localhost:5173
 
+![interface](./docs/imgs/interface.png)
+
 Or test the API directly with a tool like Postman:
 
 - http://localhost:3000/validate-address
@@ -60,8 +74,9 @@ Tradeoffs for Nominatim:
 
 - ✅ Free and no API key required
 - ✅ OpenStreetMap ecosystem with an option to run a self-managed instance
+- ✅ Nominatim instance can be downloaded with only US region
 - ⚠️ Rate limits and potential availability constraints on the public endpoint
-- ⚠️ Data quality and normalization may be less consistent than paid providers
+- ⚠️ Data quality and normalization less consistent than paid providers
 - ⚠️ No fuzzy search means typos won't be caught by Nominatim
 
 The provider is accessed through an `AddressProvider` interface, so swapping providers later is a small, contained change.
@@ -127,17 +142,10 @@ If the lookup fails or returns an incomplete result, the API returns:
 
 ## AI Usage
 
-- Used Codex (OpenAI) to create the frontend components and css for the address validator website.
-- Utilized ChatGPT to research on vendors for address search and autocomplete.
-- Used Copilot for autocomplete features and refactoring.
+AI tools were used as development assistants to speed up iteration and improve code quality.
 
-## Technologies Used
+- **OpenAI Codex / ChatGPT** were used to scaffold frontend components, experiment with UI layouts, and research address validation and autocomplete providers.
+- **ChatGPT** assisted with API design decisions, edge-case handling (ambiguous or partial addresses), and debugging during development.
+- **GitHub Copilot** was used for autocomplete, small refactors, and reducing boilerplate.
 
-- 🧠 Language: TypeScript
-- 🏗️ Backend: NestJS
-- 🧪 Validation: Zod (runtime schemas + DTOs)
-- ✅ Testing: Jest (unit tests)
-- 🖥️ Frontend: React + Vite
-- 🎨 Styling: Tailwind CSS
-- 📦 Monorepo: `pnpm` workspaces
-- 🧩 Shared Types: `@address-validator/types` (Zod + TypeScript)
+All AI-generated output was reviewed and adapted manually; final implementation and architectural decisions were made by me.
