@@ -1,4 +1,5 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common"; import { Address } from "src/schemas/address.schema";
+import { AddressProvider } from "./addressProvider";
 
 export type NominatimAddress = {
     house_number?: string;
@@ -20,8 +21,8 @@ const USER_AGENT = "address-validator-interview/1.0";
 export const US_COUNTRY_CODE = "us";
 
 @Injectable()
-export class NominatimProvider {
-    async search(addressText: string): Promise<NominatimResult[] | null> {
+export class NominatimProvider implements AddressProvider {
+    async search(addressText: string): Promise<Address[] | null> {
         const url = new URL("https://nominatim.openstreetmap.org/search");
 
         url.searchParams.set("q", addressText);
@@ -44,6 +45,22 @@ export class NominatimProvider {
 
         const results = (await response.json()) as NominatimResult[];
 
-        return results.length ? results : null;
+        if (!results || results.length === 0) {
+            return null;
+        }
+
+        return results.map((result) => (this.normalizeAddress(result?.address)));
+    }
+
+
+    normalizeAddress(address?: NominatimAddress): Address {
+        const city = address?.city ?? address?.town ?? address?.village;
+        return {
+            street: address?.road,
+            number: address?.house_number,
+            city,
+            state: address?.state,
+            zipCode: address?.postcode,
+        };
     }
 }

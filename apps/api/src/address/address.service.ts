@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { NominatimAddress, NominatimProvider, US_COUNTRY_CODE } from "src/providers/nominatim";
+import { NominatimProvider } from "src/providers/nominatim";
 import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "src/schemas/address.schema";
 import { US_STATE_MAP } from "src/schemas/usStates";
 
@@ -8,31 +8,25 @@ export class AddressService {
     constructor(private readonly nominatim: NominatimProvider) { }
 
     async validateAddress(input: string): Promise<ValidateAddressResponse> {
-        const results = await this.nominatim.search(input);
+        const addresses = await this.nominatim.search(input);
 
-        if (!results || results.length !== 1 || !results[0].address) {
+        if (!addresses || addresses.length !== 1 || !addresses[0]) {
             return this.unverifiableResponse();
         }
 
-        const address = results[0].address;
+        const address = addresses[0];
 
-        if (address.country_code !== US_COUNTRY_CODE) {
+        if (!this.isCompleteAddress(address)) {
             return this.unverifiableResponse();
         }
 
-        const normalizedAddress = this.normalizeAddress(address);
-
-        if (!this.isCompleteAddress(normalizedAddress)) {
-            return this.unverifiableResponse();
-        }
-
-        const status = this.getAddressStatus(input, normalizedAddress);
+        const status = this.getAddressStatus(input, address);
 
         //@TODO: Possibly handle Statuses with HTTP Codes 
         // (e.g. 200 for VALID, 200 with warning for CORRECTED, 422 for UNVERIFIABLE)
 
         return {
-            ...normalizedAddress,
+            ...address,
             status,
         }
     }
@@ -40,17 +34,6 @@ export class AddressService {
     unverifiableResponse(): ValidateAddressResponse {
         return {
             status: ADDRESS_STATUS.UNVERIFIABLE,
-        };
-    }
-
-    normalizeAddress(address: NominatimAddress): Address {
-        const city = address.city ?? address.town ?? address.village;
-        return {
-            street: address.road,
-            number: address.house_number,
-            city,
-            state: address.state,
-            zipCode: address.postcode,
         };
     }
 
