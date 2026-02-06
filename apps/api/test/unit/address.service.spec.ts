@@ -1,5 +1,5 @@
+import { Address, ADDRESS_STATUS } from "@address-validator/types";
 import { AddressService } from "../../src/address/address.service";
-import { ADDRESS_STATUS, Address } from "../../src/schemas/address.schema";
 import { NominatimProvider } from "../../src/providers/nominatim";
 
 describe("AddressService", () => {

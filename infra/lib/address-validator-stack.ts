@@ -5,7 +5,6 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
@@ -70,31 +69,15 @@ export class AddressValidatorStack extends cdk.Stack {
       value: distribution.domainName,
     });
 
-    const apiFunction = new lambdaNodejs.NodejsFunction(
-      this,
-      'AddressValidatorApi',
-      {
-        entry: path.join(__dirname, '../../apps/api/src/lambda.ts'),
-        handler: 'handler',
-        runtime: lambda.Runtime.NODEJS_20_X,
-        memorySize: 1024,
-        timeout: cdk.Duration.seconds(30),
-        bundling: {
-          externalModules: [
-            'aws-sdk',
-            'class-transformer',
-            'class-validator',
-            '@nestjs/microservices',
-            '@nestjs/microservices/microservices-module',
-            '@nestjs/websockets/socket-module',
-          ],
-          format: lambdaNodejs.OutputFormat.ESM,
-          tsconfig: path.join(__dirname, '../../apps/api/tsconfig.json'),
-        },
-        depsLockFilePath: path.join(__dirname, '../../pnpm-lock.yaml'),
-        projectRoot: path.join(__dirname, '../..'),
-      },
-    );
+    const apiFunction = new lambda.Function(this, 'AddressValidatorApi', {
+      code: lambda.Code.fromAsset(
+        path.join(__dirname, '../../apps/api/dist/lambda'),
+      ),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(30),
+    });
 
     const api = new apigateway.LambdaRestApi(
       this,

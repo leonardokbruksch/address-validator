@@ -1,6 +1,6 @@
+import { ADDRESS_STATUS } from "@address-validator/types";
 import { AddressController } from "../../src/address/address.controller";
 import { AddressService } from "../../src/address/address.service";
-import { ADDRESS_STATUS } from "../../src/schemas/address.schema";
 
 describe("AddressController", () => {
     it("delegates to AddressService.validateAddress with request address", async () => {
