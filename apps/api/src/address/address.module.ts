@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { AddressController } from "./address.controller";
 import { AddressService } from "./address.service";
-import { ADDRESS_PROVIDER } from "src/providers/addressProvider";
-import { NominatimProvider } from "src/providers/nominatim";
+import { ADDRESS_PROVIDER } from "../providers/addressProvider";
+import { NominatimProvider } from "../providers/nominatim";
 
 @Module({
     controllers: [AddressController],

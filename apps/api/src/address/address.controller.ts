@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ZodSerializerDto } from "nestjs-zod";
-import { AddressService } from "src/address/address.service";
-import { ValidateAddressRequestDto, ValidateAddressResponseDto } from "src/schemas/address.schema";
+import { AddressService } from "./address.service";
+import { ValidateAddressRequestDto, ValidateAddressResponseDto } from "../schemas/address.schema";
 
 @Controller("validate-address")
 export class AddressController {

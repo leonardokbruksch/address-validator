@@ -1,5 +1,7 @@
 # 📦 Address Validator
 
+Live demo: https://d309zik0lvuwhs.cloudfront.net/
+
 A take-home interview project that implements a simple address validation flow end-to-end:
 
 - `apps/web`: React + Vite UI for submitting an address and viewing results
@@ -24,6 +26,10 @@ A take-home interview project that implements a simple address validation flow e
 
 - The API validates requests and responses at runtime using Zod schemas (`nestjs-zod` DTOs).
 - Address lookups currently use the Nominatim public API through a provider interface, so a different provider can be swapped in later with minimal surface changes.
+- Infrastructure is defined in `infra` using AWS CDK, which provisions:
+  - S3 bucket + CloudFront distribution for the React SPA
+  - AWS Lambda for the NestJS API
+  - API Gateway proxying requests to Lambda
 
 ## Running Locally
 
@@ -133,6 +139,7 @@ If the upstream address provider is unavailable or errors, the API returns `502 
 - `apps/web`: React + Vite UI
 - `apps/api`: NestJS API, schemas, providers, and unit tests
 - `apps/types`: Shared data contracts and types for both backend and frontend
+- `infra`: AWS CDK IaC for S3/CloudFront + Lambda/API Gateway
 
 ## Future Improvements
 

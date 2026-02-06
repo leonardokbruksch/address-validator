@@ -1,7 +1,7 @@
 import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "@address-validator/types";
 import { BadGatewayException, Inject, Injectable } from "@nestjs/common";
-import * as addressProvider from "src/providers/addressProvider";
-import { US_STATE_MAP } from "src/schemas/usStates";
+import * as addressProvider from "../providers/addressProvider";
+import { US_STATE_MAP } from "../schemas/usStates";
 
 @Injectable()
 export class AddressService {
