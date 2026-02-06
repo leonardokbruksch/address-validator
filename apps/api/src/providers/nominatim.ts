@@ -31,7 +31,8 @@ export class NominatimProvider implements AddressProvider {
     async search(addressText: string): Promise<Address[] | null> {
         const url = this.buildUrl(addressText);
         const response = await this.fetchWithRetry(url);
-        return this.parseResults(response);
+        const normalizedAddresses = await this.parseResults(response);
+        return this.deduplicateByPostalAddress(normalizedAddresses);
     }
 
     private buildUrl(addressText: string): URL {
@@ -96,7 +97,7 @@ export class NominatimProvider implements AddressProvider {
         });
     }
 
-    normalizeAddress(address?: NominatimAddress): Address {
+    private normalizeAddress(address?: NominatimAddress): Address {
         const city = address?.city ?? address?.town ?? address?.village;
         return {
             street: address?.road,
@@ -105,5 +106,29 @@ export class NominatimProvider implements AddressProvider {
             state: address?.state,
             zipCode: address?.postcode,
         };
+    }
+
+    private deduplicateByPostalAddress(addresses: Address[] | null): Address[] | null {
+        if (!addresses) return null;
+
+        const map = new Map<string, Address>();
+
+        for (const a of addresses) {
+            const key = [
+                a.number,
+                a.street,
+                a.city,
+                a.state,
+                a.zipCode,
+            ]
+                .map(v => v?.toLowerCase().trim())
+                .join("|");
+
+            if (!map.has(key)) {
+                map.set(key, a);
+            }
+        }
+
+        return Array.from(map.values());
     }
 }
