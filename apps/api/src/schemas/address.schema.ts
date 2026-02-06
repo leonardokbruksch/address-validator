@@ -9,7 +9,9 @@ export class ValidateAddressRequestDto extends createZodDto(
     ValidateAddressRequestSchema,
 ) { }
 
-export type ValidateAddressRequest = z.infer<typeof ValidateAddressRequestSchema>;
+export type ValidateAddressRequest = z.infer<
+    typeof ValidateAddressRequestSchema
+>;
 
 export const ADDRESS_STATUS = {
     VALID: "VALID",
@@ -26,16 +28,24 @@ export const AddressStatusEnum = z.enum([
 export type AddressStatus =
     (typeof ADDRESS_STATUS)[keyof typeof ADDRESS_STATUS];
 
-export const ValidateAddressResponseSchema = z.object({
+export const AddressSchema = z.object({
     street: z.string().optional(),
     number: z.string().optional(),
     city: z.string().optional(),
     state: z.string().optional(),
     zipCode: z.string().optional(),
+});
+
+export type Address = z.infer<typeof AddressSchema>;
+
+export const ValidateAddressResponseSchema = AddressSchema.extend({
     status: AddressStatusEnum,
 });
+
 export class ValidateAddressResponseDto extends createZodDto(
     ValidateAddressResponseSchema,
 ) { }
 
-export type ValidateAddressResponse = z.infer<typeof ValidateAddressResponseSchema>;
+export type ValidateAddressResponse = z.infer<
+    typeof ValidateAddressResponseSchema
+>;

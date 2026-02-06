@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-type NominatimAddress = {
+export type NominatimAddress = {
     house_number?: string;
     road?: string;
     city?: string;

@@ -1,90 +1,90 @@
 import { Injectable } from "@nestjs/common";
-import { GoogleAddressValidationProvider } from "src/providers/google";
-import { NominatimProvider, US_COUNTRY_CODE } from "src/providers/nominatim";
-import { ADDRESS_STATUS, ValidateAddressResponse } from "src/schemas/address.schema";
+import { NominatimAddress, NominatimProvider, US_COUNTRY_CODE } from "src/providers/nominatim";
+import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "src/schemas/address.schema";
 
 @Injectable()
 export class AddressService {
-    constructor(private readonly nominatim: NominatimProvider, private readonly google: GoogleAddressValidationProvider) { }
+    constructor(private readonly nominatim: NominatimProvider) { }
 
-    async validateAddress(addressText: string): Promise<ValidateAddressResponse> {
-        const results = await this.nominatim.search(addressText);
+    async validateAddress(input: string): Promise<ValidateAddressResponse> {
+        const results = await this.nominatim.search(input);
 
-        const address =
-            results && results.length === 1
-                ? results[0]?.address
-                : null;
-
-        if (!address || address?.country_code !== US_COUNTRY_CODE) {
-            return {
-                status: ADDRESS_STATUS.UNVERIFIABLE,
-            };
+        if (!results || results.length !== 1 || !results[0].address) {
+            return this.unverifiableResponse();
         }
 
+        const address = results[0].address;
+
+        if (address.country_code !== US_COUNTRY_CODE) {
+            return this.unverifiableResponse();
+        }
+
+        const normalizedAddress = this.normalizeAddress(address);
+
+        if (!this.isCompleteAddress(normalizedAddress)) {
+            return this.unverifiableResponse();
+        }
+
+        const status = this.getAddressStatus(input, normalizedAddress);
+
+        //@TODO: Possibly handle Statuses with HTTP Codes 
+        // (e.g. 200 for VALID, 200 with warning for CORRECTED, 422 for UNVERIFIABLE)
+
         return {
-            street: address.road,
-            number: address.house_number,
-            city: address.city ?? address.town ?? address.village,
-            state: address.state,
-            zipCode: address.postcode,
-            status: ADDRESS_STATUS.CORRECTED, // @TODO: Implement better logic to determine if the address is valid or corrected
+            ...normalizedAddress,
+            status,
+        }
+    }
+
+    unverifiableResponse(): ValidateAddressResponse {
+        return {
+            status: ADDRESS_STATUS.UNVERIFIABLE,
         };
     }
 
-    // async validateWithGoogle(
-    //     addressText: string,
-    // ): Promise<ValidateAddressResponse & { status: AddressStatus }> {
-    //     console.log("Validating with Google:", addressText);
-    //     const result = await this.google.validate(addressText);
-    //     console.log("Google validation result:", result);
-    //     if (!result) {
-    //         return { status: "unverifiable" };
-    //     }
+    normalizeAddress(address: NominatimAddress): Address {
+        const city = address.city ?? address.town ?? address.village;
+        return {
+            street: address.road,
+            number: address.house_number,
+            city,
+            state: address.state,
+            zipCode: address.postcode,
+        };
+    }
 
-    //     const components = result.address.addressComponents;
+    isCompleteAddress(address: Address): boolean {
+        return Boolean(
+            address.street &&
+            address.number &&
+            address.city &&
+            address.state &&
+            address.zipCode
+        );
+    }
 
-    //     console.log("Address components:", components);
+    getAddressStatus(input: string, address: Address): AddressStatus {
+        if (this.isAddressCorrected(input, address)) {
+            return ADDRESS_STATUS.CORRECTED;
+        } else {
+            return ADDRESS_STATUS.VALID;
+        }
+    }
 
-    //     const get = (type: string) =>
-    //         components.find(c => c.componentType === type)?.componentName.text;
+    isAddressCorrected(input: string, address: Address): boolean {
+        if (!this.inputMentions(input, address.street)) return true;
+        if (!this.inputMentions(input, address.number)) return true;
+        if (!this.inputMentions(input, address.city)) return true;
+        if (!this.inputMentions(input, address.state)) return true;
+        if (!this.inputMentions(input, address.zipCode)) return true;
 
-    //     const street = get("route");
-    //     const number = get("street_number");
-    //     const city = get("locality");
-    //     const state = get("administrative_area_level_1");
-    //     const zipCode = get("postal_code");
+        return false;
+    }
 
-    //     if (!result.verdict.addressComplete) {
-    //         return {
-    //             street,
-    //             number,
-    //             city,
-    //             state,
-    //             zipCode,
-    //             status: "unverifiable",
-    //         };
-    //     }
-
-    //     if (result.verdict.hasUnconfirmedComponents) {
-    //         return {
-    //             street,
-    //             number,
-    //             city,
-    //             state,
-    //             zipCode,
-    //             status: "corrected",
-    //         };
-    //     }
-
-    //     return {
-    //         street,
-    //         number,
-    //         city,
-    //         state,
-    //         zipCode,
-    //         status: "valid",
-    //     };
-    // }
-
-
+    inputMentions(input: string, value?: string) {
+        if (!value) {
+            return false;
+        }
+        return input.toLowerCase().includes(value.toLowerCase());
+    }
 }
