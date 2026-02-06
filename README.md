@@ -31,7 +31,7 @@ A take-home interview project that implements a simple address validation flow e
   - AWS Lambda for the NestJS API
   - API Gateway proxying requests to Lambda
 
-## Running Locally
+## Getting Started
 
 Pre-requisites:
 
@@ -42,6 +42,12 @@ Install dependencies:
 
 ```bash
 pnpm install
+```
+
+Build Packages:
+
+```bash
+pnpm build
 ```
 
 Run the web app and API together:
