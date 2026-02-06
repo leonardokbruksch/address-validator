@@ -9,5 +9,8 @@
 		"^.+\\.(t|j)s$": "ts-jest"
 	},
 	"testEnvironment": "node",
-	"collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/lambda.ts"]
+	"collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/lambda.ts"],
+	"moduleNameMapper": {
+		"^src/(.*)$": "<rootDir>/src/$1"
+	}
 }
