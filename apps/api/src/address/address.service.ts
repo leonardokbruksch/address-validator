@@ -22,9 +22,6 @@ export class AddressService {
 
         const status = this.getAddressStatus(input, address);
 
-        //@TODO: Possibly handle Statuses with HTTP Codes 
-        // (e.g. 200 for VALID, 200 with warning for CORRECTED, 422 for UNVERIFIABLE)
-
         return {
             ...address,
             status,
@@ -74,9 +71,11 @@ export class AddressService {
     }
 
     isStateEqual(input: string, state?: string): boolean {
-        // Handles semantic differences in state representation
-        // Semantic differences are not counted as corrections
-        // e.g. "California" vs "CA"
+        /**
+         * Handles semantic differences in state representation
+         * Semantic differences are not counted as corrections
+         * e.g. "California" vs "CA"
+         */
 
         if (!state) {
             return false;

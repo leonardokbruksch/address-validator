@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { AddressProvider } from "./addressProvider";
 import { Address } from "@address-validator/types";
 
@@ -58,7 +58,7 @@ export class NominatimProvider implements AddressProvider {
                         await this.delay(this.retryDelayMs);
                         continue;
                     }
-                    throw new Error(`Nominatim request failed with status ${response.status}`);
+                    throw new ServiceUnavailableException(`Nominatim request failed with status ${response.status}`);
                 }
 
                 return response;
@@ -71,7 +71,7 @@ export class NominatimProvider implements AddressProvider {
             }
         }
 
-        throw new Error("Unreachable");
+        throw new ServiceUnavailableException("Unreachable");
     }
 
     private shouldRetry(status: number): boolean {
