@@ -24,12 +24,10 @@ A take-home interview project that implements a simple address validation flow e
 
 ![diagram](./docs/imgs/diagram.png)
 
-- The API validates requests and responses at runtime using Zod schemas (`nestjs-zod` DTOs).
-- Address lookups currently use the Nominatim public API through a provider interface, so a different provider can be swapped in later with minimal surface changes.
-- Infrastructure is defined in `infra` using AWS CDK, which provisions:
-  - S3 bucket + CloudFront distribution for the React SPA
-  - AWS Lambda for the NestJS API
-  - API Gateway proxying requests to Lambda
+- Runtime validation via Zod for both request and response contracts
+- Address resolution abstracted behind an `AddressProvider` interface
+- Shared `@address-validator/types` package enforces a single source of truth
+- Serverless deployment (Lambda + API Gateway) to match real-world scalability patterns
 
 ## Getting Started
 
@@ -80,7 +78,7 @@ Example Request:
 
 I selected the Nominatim public API (OpenStreetMap) as the initial provider because it is free and does not require an API key. Nominatim can also be self-hosted in the cloud if a fully self-managed setup is desired.
 
-Other viable options include Google Maps API, USPS, Smarty, and Mapbox.
+Other viable options include Google Maps Geocoding API, USPS, Smarty, and Mapbox.
 
 Tradeoffs for Nominatim:
 
@@ -93,11 +91,18 @@ Tradeoffs for Nominatim:
 
 The provider is accessed through an `AddressProvider` interface, so swapping providers later is a small, contained change.
 
+In many production contexts, a paid provider such as **Google Maps Geocoding API** is a stronger default because of its reliability, coverage, and tooling. Concrete advantages:
+
+- High-quality geocoding data across countries and regions
+- Strong address normalization and disambiguation (handles typos, unit/suite formats, and partial inputs)
+- Autocomplete and Places data improve UX and reduce invalid submissions
 ## Shared Types Package
 
 I created a shared `@address-validator/types` package in the monorepo. Both the API and web app consume the same Zod schemas and TypeScript types, which prevents duplication and keeps contracts synchronized across the stack. This keeps the codebase easy to follow and enforces a single source of truth for validation and response shapes.
 
 ## Validation Logic (Explicit)
+
+“Validation” in this project means resolving a free-form address into a structured, normalized representation using a third-party provider.
 
 The API returns a structured address plus a status. The status is computed with the following rules:
 
@@ -164,3 +169,12 @@ AI tools were used as development assistants to speed up iteration and improve c
 - **GitHub Copilot** was used for autocomplete, small refactors, and reducing boilerplate.
 
 All AI-generated output was reviewed and adapted manually; final implementation and architectural decisions were made by me.
+
+## Scope & Non-Goals
+
+This project intentionally focuses on correctness, structure, and extensibility rather than exhaustive address intelligence.
+
+Out of scope for this assessment:
+- Fuzzy matching or typo correction
+- International address normalization
+- Persistent storage of validation results
