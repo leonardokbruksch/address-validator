@@ -1,4 +1,5 @@
-import { Address } from "src/schemas/address.schema";
+import { Address } from "@address-validator/types";
+
 
 export interface AddressProvider {
     search(input: string): Promise<Address[] | null>;

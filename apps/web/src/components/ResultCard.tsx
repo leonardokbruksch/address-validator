@@ -1,8 +1,8 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { StructuredAddress } from "@/types/address";
 import StatusBadge from "./StatusBadge";
 import ReadonlyField from "./ReadonlyField";
+import type { StructuredAddress } from "@address-validator/types";
 
 interface ResultCardProps {
     result?: StructuredAddress;

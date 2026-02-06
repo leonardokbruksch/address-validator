@@ -1,6 +1,6 @@
+import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "@address-validator/types";
 import { Injectable } from "@nestjs/common";
 import { NominatimProvider } from "src/providers/nominatim";
-import { Address, ADDRESS_STATUS, AddressStatus, ValidateAddressResponse } from "src/schemas/address.schema";
 import { US_STATE_MAP } from "src/schemas/usStates";
 
 @Injectable()

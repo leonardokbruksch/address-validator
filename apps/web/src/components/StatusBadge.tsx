@@ -1,4 +1,5 @@
-import type { AddressStatus } from "@/types/address";
+
+import type { AddressStatus } from "@address-validator/types";
 import { Skeleton } from "./ui/skeleton";
 
 const STATUS_STYLES: Record<

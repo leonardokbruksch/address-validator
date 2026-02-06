@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common"; import { Address } from "src/schemas/address.schema";
+import { Injectable } from "@nestjs/common";
 import { AddressProvider } from "./addressProvider";
+import { Address } from "@address-validator/types";
 
 export type NominatimAddress = {
     house_number?: string;

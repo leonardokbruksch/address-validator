@@ -27,6 +27,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@address-validator/types':
+        specifier: workspace:*
+        version: link:../types
       '@codegenie/serverless-express':
         specifier: ^4.17.1
         version: 4.17.1
@@ -110,8 +113,21 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
+  apps/types:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
   apps/web:
     dependencies:
+      '@address-validator/types':
+        specifier: workspace:*
+        version: link:../types
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

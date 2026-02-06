@@ -1,0 +1,24 @@
+{
+	"name": "@address-validator/types",
+	"version": "0.0.1",
+	"description": "Shared types for address validator",
+	"private": true,
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"typescript": "~5.9.3"
+	}
+}

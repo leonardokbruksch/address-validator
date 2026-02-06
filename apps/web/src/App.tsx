@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { InputCard } from "@/components/InputCard";
 import { ResultCard } from "@/components/ResultCard";
-import { ADDRESS_STATUS, type StructuredAddress } from "./types/address";
+import { ADDRESS_STATUS, type StructuredAddress } from "@address-validator/types";
 
 export default function App() {
 	const [input, setInput] = useState<string | undefined>(undefined);
