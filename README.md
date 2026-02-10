@@ -36,6 +36,7 @@ Pre-requisites:
 
 - `Node.js`
 - `pnpm`
+- `Docker` (for Redis cache)
 
 Install dependencies:
 
@@ -72,7 +73,6 @@ Example Request:
   "address": "1 Infinite Loop, Cupertino, CA 95014"
 }
 ```
-
 
 
 ## Address Provider Choice (Nominatim)
@@ -141,10 +141,26 @@ If the lookup fails or returns an incomplete result, the API returns:
 
 If the upstream address provider is unavailable or errors, the API returns `502 Bad Gateway`.
 
+## Caching (Redis)
+
+The API uses Redis for response caching (POST `/validate-address` is cached based on the request body).
+
+Start Redis + RedisInsight locally:
+
+```bash
+pnpm docker:up
+```
+
+By default, the API connects to:
+
+- `REDIS_URL=redis://localhost:6379`
+
 ## Configuration
 
 - The web app defaults to `http://localhost:3000` for the API.
 - You can override this by setting `VITE_ADDRESS_VALIDATOR_API_URL` at build time (e.g. in the Vite environment).
+- Redis cache url defaults to `redis://localhost:6379``
+- You can override this by setting `REDIS_URL` at build time.
 
 ## Repository Structure
 
@@ -155,7 +171,7 @@ If the upstream address provider is unavailable or errors, the API returns `502 
 
 ## Future Improvements
 
-- Add caching and request throttling to reduce dependency on upstream rate limits
+- Add request throttling to reduce dependency on upstream rate limits
 - Support additional providers (USPS, Smarty, Google, etc.) via the provider interface
 - Expand validation semantics (e.g., Avenue vs Av, N vs North)
 - Add E2E tests that hit Nominatim's API
