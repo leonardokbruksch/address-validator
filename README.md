@@ -145,6 +145,12 @@ If the upstream address provider is unavailable or errors, the API returns `502 
 
 The API uses Redis for response caching (POST `/validate-address` is cached based on the request body).
 
+Why Redis for caching and throttling in this project:
+
+- The API is deployed serverlessly (Lambda + API Gateway), which means multiple instances can run concurrently.
+- In-memory caches and counters are instance-local, so they reset on cold starts and do not coordinate across instances.
+- Redis provides a shared, centralized store that keeps cache entries and rate-limit counters consistent across all instances.
+
 Start Redis + RedisInsight locally:
 
 ```bash
@@ -154,6 +160,16 @@ pnpm docker:up
 By default, the API connects to:
 
 - `REDIS_URL=redis://localhost:6379`
+
+## Rate Limiting (Redis)
+
+The API also uses Redis-backed rate limiting to protect the `/validate-address` endpoint from abuse and to demonstrate distributed throttling. This is implemented with the NestJS throttler guard and a Redis storage adapter (currently `@nest-lab/throttler-storage-redis`).
+
+Default policy:
+
+- 60 requests per minute per IP
+
+Because the app is serverless and can scale horizontally, Redis is required to keep rate-limit counters consistent across instances.
 
 ## Configuration
 
@@ -171,7 +187,7 @@ By default, the API connects to:
 
 ## Future Improvements
 
-- Add request throttling to reduce dependency on upstream rate limits
+- Add IaC code to deploy a managed Redis instance
 - Support additional providers (USPS, Smarty, Google, etc.) via the provider interface
 - Expand validation semantics (e.g., Avenue vs Av, N vs North)
 - Add E2E tests that hit Nominatim's API

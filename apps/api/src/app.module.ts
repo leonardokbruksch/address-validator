@@ -1,10 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { ZodSerializerInterceptor, ZodValidationPipe } from "nestjs-zod";
 import { LoggerMiddleware } from "./middleware/loggerMiddleware";
 import { AddressModule } from "./address/address.module";
 import { CacheInterceptor, CacheModule } from "@nestjs/cache-manager";
 import KeyvRedis from "@keyv/redis";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerStorageRedisService } from "@nest-lab/throttler-storage-redis";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 
@@ -20,6 +22,15 @@ const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 				ttl: 3_600_000, // 1 hour in milliseconds
 			}),
 		}),
+		ThrottlerModule.forRoot({
+			throttlers: [
+				{
+					ttl: 60_000, // 1 minute in milliseconds
+					limit: 2, // set to 2 for demo purposes,
+				},
+			],
+			storage: new ThrottlerStorageRedisService(REDIS_URL),
+		}),
 	],
 	controllers: [],
 	providers: [
@@ -34,7 +45,11 @@ const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: CacheInterceptor,
-		}
+		},
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
+		},
 	],
 })
 export class AppModule implements NestModule {
