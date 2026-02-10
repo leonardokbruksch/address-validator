@@ -1,4 +1,5 @@
 import serverlessExpress from "@codegenie/serverless-express";
+import { VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import type { Callback, Context, Handler } from "aws-lambda";
@@ -20,6 +21,19 @@ async function bootstrap() {
 		origin: true,
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization"],
+	});
+
+	// Default to v1 when no version segment is present in the URI.
+	app.use((req, _res, next) => {
+		if (!/^\/v\d+(\/|$)/.test(req.url)) {
+			req.url = `/v1${req.url === "/" ? "" : req.url}`;
+		}
+		next();
+	});
+
+	app.enableVersioning({
+		type: VersioningType.URI,
+		defaultVersion: "1",
 	});
 
 	await app.init();
