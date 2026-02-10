@@ -12,7 +12,9 @@
 		"check": "biome check .",
 		"build": "pnpm -r build",
 		"deploy": "pnpm --filter infra deploy",
-		"dev": "concurrently -k -n WEB,API -c blue,green \"pnpm dev:web\" \"pnpm dev:api\"",
+		"docker:up": "docker compose up -d",
+		"docker:down": "docker compose down",
+		"dev": "pnpm docker:up && concurrently -k -n WEB,API -c blue,green \"pnpm dev:web\" \"pnpm dev:api\"",
 		"dev:web": "pnpm --filter web dev",
 		"dev:api": "pnpm --filter api dev"
 	},

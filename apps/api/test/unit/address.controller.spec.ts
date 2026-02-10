@@ -10,7 +10,7 @@ describe("AddressController", () => {
 
         const controller = new AddressController(service);
 
-        const res = await controller.sendHello({ address: "123 Main St" });
+        const res = await controller.validateAddress({ address: "123 Main St" });
 
         expect(service.validateAddress).toHaveBeenCalledWith("123 Main St");
         expect(res).toEqual({ status: ADDRESS_STATUS.VALID });

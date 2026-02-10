@@ -20,10 +20,13 @@
 	"dependencies": {
 		"@address-validator/types": "workspace:*",
 		"@codegenie/serverless-express": "^4.17.1",
+		"@keyv/redis": "^5.1.6",
+		"@nestjs/cache-manager": "^3.1.0",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/core": "^11.0.1",
 		"@nestjs/platform-express": "^11.1.13",
 		"aws-lambda": "^1.0.7",
+		"cache-manager": "^7.2.8",
 		"express": "^5.2.1",
 		"nestjs-zod": "^5.1.1",
 		"reflect-metadata": "^0.2.2",
