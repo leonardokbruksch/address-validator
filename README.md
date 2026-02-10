@@ -187,6 +187,7 @@ Because the app is serverless and can scale horizontally, Redis is required to k
 
 ## Future Improvements
 
+- Add versioning to API
 - Add IaC code to deploy a managed Redis instance
 - Support additional providers (USPS, Smarty, Google, etc.) via the provider interface
 - Expand validation semantics (e.g., Avenue vs Av, N vs North)
